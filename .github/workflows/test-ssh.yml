@@ -1,6 +1,5 @@
 name: Deploy index.html to EC2
 
-# Trigger on push to main branch
 on:
   push:
     branches:
@@ -11,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout your repository
+      # Step 1: Checkout the repo
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -29,4 +28,12 @@ jobs:
 
       # Step 3: Restart Nginx on EC2
       - name: Restart Nginx
-        uses: appleboy/ssh-actio
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          script: |
+            sudo systemctl restart nginx
+            echo "✅ Deployment complete"

@@ -1,21 +1,40 @@
-name: Test SSH Connection to EC2
+name: Deploy index.html to EC2
 
+# Trigger on push to main branch
 on:
-  workflow_dispatch:   # allows manual run from GitHub Actions tab
+  push:
+    branches:
+      - main
 
 jobs:
-  test-connection:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test SSH to EC2
+      # Step 1: Checkout your repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Copy index.html to EC2
+      - name: Copy index.html to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          source: "index.html"
+          target: "/var/www/html/"
+          overwrite: true
+
+      # Step 3: Restart Nginx on EC2
+      - name: Restart Nginx
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+          port: 22
           script: |
-            echo "✅ Connected successfully to EC2 instance!"
-            hostname
-            whoami
-            uptime
+            sudo systemctl restart nginx
+            echo "✅ Deployment complete and Nginx restarted!"

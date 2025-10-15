@@ -29,12 +29,4 @@ jobs:
 
       # Step 3: Restart Nginx on EC2
       - name: Restart Nginx
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.EC2_IP }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          port: 22
-          script: |
-            sudo systemctl restart nginx
-            echo "✅ Deployment complete and Nginx restarted!"
+        uses: appleboy/ssh-actio
